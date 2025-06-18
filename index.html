@@ -18,7 +18,8 @@
       position: fixed;
       top: 10px;
       left: 10px;
-      background: rgba(255, 255, 255, 0.8);
+      /* 背景色を削除 */
+      background: none;
       padding: 10px;
       border-radius: 4px;
       z-index: 100;
@@ -79,8 +80,9 @@
       position: absolute;
       left: 10px;
       bottom: 10px;
-      background: rgba(0,0,0,0.6);
-      color: white;
+      /* 背景色を削除 */
+      background: none;
+      color: black;
       padding: 5px 10px;
       border-radius: 3px;
     }
@@ -107,10 +109,8 @@
 </head>
 <body>
   <nav>
-    <a href="#" onclick="showPage('photo')">写真</a>
-    <a href="#" onclick="showPage('thumbnail')">サムネイル</a>
-    <a href="#" onclick="showPage('profile')">プロフィール</a>
-  </nav>
+    <a href="#" onclick="showPage('thumbnail')">INDEX</a>
+    </nav>
 
   <div id="photo-page" class="page active">
     <div id="photo-container">
@@ -131,16 +131,11 @@
     </script>
   </div>
 
-  <div id="profile-page" class="page">
-    <!-- プロフィールページ：現在は空白 -->
-  </div>
-
-  <script>
+    <script>
     const pages = {
       photo: document.getElementById('photo-page'),
       thumbnail: document.getElementById('thumbnail-page'),
-      profile: document.getElementById('profile-page')
-    };
+      };
 
     function showPage(page) {
       for (let key in pages) pages[key].classList.remove('active');
