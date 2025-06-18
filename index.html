@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>シンプル写真サイト</title>
   <style>
     * {
@@ -18,17 +18,28 @@
       position: fixed;
       top: 10px;
       left: 10px;
-      /* 背景色を削除 */
       background: none;
       padding: 10px;
       border-radius: 4px;
       z-index: 100;
+
+      /* 横並びに */
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     nav a {
       display: block;
-      margin-bottom: 5px;
       text-decoration: none;
       color: #333;
+    }
+    #counter {
+      background: none;
+      color: black;
+      padding: 5px 10px;
+      border-radius: 3px;
+      margin-top: 0;
+      white-space: nowrap;
     }
     .page {
       display: none;
@@ -80,16 +91,6 @@
     #right-click {
       right: 0;
     }
-    #counter {
-      position: absolute;
-      left: 10px;
-      bottom: 10px;
-      /* 背景色を削除 */
-      background: none;
-      color: black;
-      padding: 5px 10px;
-      border-radius: 3px;
-    }
     #thumbnail-page {
       display: flex;
       flex-wrap: wrap;
@@ -114,12 +115,12 @@
 <body>
   <nav>
     <a href="#" onclick="showPage('thumbnail')">INDEX</a>
-    </nav>
+    <div id="counter">01</div>
+  </nav>
 
   <div id="photo-page" class="page active">
     <div id="photo-container">
-      <img id="main-photo" src="photo_001.jpg" alt="写真">
-      <div id="counter">1/10</div>
+      <img id="main-photo" src="photo_001.jpg" alt="写真" />
     </div>
     <div id="left-click" class="overlay" onclick="prevPhoto()"></div>
     <div id="right-click" class="overlay" onclick="nextPhoto()"></div>
@@ -128,34 +129,43 @@
   <div id="thumbnail-page" class="page">
     <!-- サムネイル画像：クリックで写真ページへ移動 -->
     <script>
-      for (let i = 1; i <= 10; i++) {
-        const num = String(i).padStart(3, '0');
-        document.write(`<img src="photo_${num}.jpg" class="thumb" onclick="goToPhoto(${i - 1})">`);
+      for (let i = 1; i <= 17; i++) {
+        const num = String(i).padStart(3, "0");
+        document.write(
+          `<img src="photo_${num}.jpg" class="thumb" onclick="goToPhoto(${i - 1})">`
+        );
       }
     </script>
   </div>
 
-    <script>
+  <script>
     const pages = {
-      photo: document.getElementById('photo-page'),
-      thumbnail: document.getElementById('thumbnail-page'),
-      };
+      photo: document.getElementById("photo-page"),
+      thumbnail: document.getElementById("thumbnail-page"),
+    };
 
     function showPage(page) {
-      for (let key in pages) pages[key].classList.remove('active');
-      pages[page].classList.add('active');
+      for (let key in pages) pages[key].classList.remove("active");
+      pages[page].classList.add("active");
+      // INDEXページではカウンター非表示、写真ページで表示
+      document.getElementById("counter").style.display =
+        page === "photo" ? "block" : "none";
     }
 
     const photos = [];
-    for (let i = 1; i <= 10; i++) {
-      const num = String(i).padStart(3, '0');
+    for (let i = 1; i <= 17; i++) {
+      const num = String(i).padStart(3, "0");
       photos.push(`photo_${num}.jpg`);
     }
     let current = 0;
 
     function updatePhoto() {
-      document.getElementById('main-photo').src = photos[current];
-      document.getElementById('counter').textContent = `${current + 1}/${photos.length}`;
+      document.getElementById("main-photo").src = photos[current];
+      // カウンターは2桁表示、例: 01, 02, ...
+      document.getElementById("counter").textContent = String(current + 1).padStart(
+        2,
+        "0"
+      );
     }
 
     function prevPhoto() {
@@ -171,7 +181,7 @@
     function goToPhoto(index) {
       current = index;
       updatePhoto();
-      showPage('photo');
+      showPage("photo");
     }
   </script>
 </body>
