@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>シンプル写真サイト</title>
@@ -11,22 +12,23 @@
       padding: 0;
     }
     body {
-      font-family: sans-serif;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 100;
+      font-size: 14px;
       overflow: hidden;
-    }
     nav {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 15px;
+      left: 20px;
       background: none;
-      padding: 10px;
+      padding: 20px;
       border-radius: 4px;
       z-index: 100;
 
       /* 横並びに */
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 2px;
     }
     nav a {
       display: block;
@@ -74,6 +76,18 @@
         max-height: 90vh;
       }
       #thumbnail-page {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: flex-start;
+      gap: 20px;
+      width: 100vw;
+      height: 100vh;
+      padding: 10vh 10vw 10vh 10vw;
+      overflow-y: scroll;
+    }
+    }
+      #thumbnail-page {
         padding-left: 5vw;
         padding-right: 5vw;
       }
@@ -103,7 +117,7 @@
       overflow-y: scroll;
     }
     .thumb {
-      width: 100%;
+      width: calc(50% - 10px);
       max-width: 200px;
       height: auto;
       object-fit: contain;
