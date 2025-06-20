@@ -4,7 +4,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>シンプル写真サイト</title>
+  <title>N</title>
   <style>
     * {
       box-sizing: border-box;
@@ -134,7 +134,7 @@
 
   <div id="photo-page" class="page active">
     <div id="photo-container">
-      <img id="main-photo" src="photo_001.jpg" alt="写真" />
+      <img id="main-photo" alt="写真" />
     </div>
     <div id="left-click" class="overlay" onclick="prevPhoto()"></div>
     <div id="right-click" class="overlay" onclick="nextPhoto()"></div>
@@ -171,7 +171,8 @@
       const num = String(i).padStart(3, "0");
       photos.push(`photo_${num}.jpg`);
     }
-    let current = 0;
+    let current = Math.floor(Math.random() * photos.length);
+updatePhoto(); // ランダム画像を反映するために追加（もしくは既存の場所で実行）
 
     function updatePhoto() {
       document.getElementById("main-photo").src = photos[current];
