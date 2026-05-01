@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Portfolio</title>
-    <!-- Google Fonts から Jost を読み込み -->
+    <title>Minimal Portfolio v2.02</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -16,27 +15,30 @@
             --text-color: #000000;
             --font-family: 'Jost', sans-serif;
             
-            /* 余白の設定 */
-            --photo-margin-pc: 10%;    /* PC時の余白 */
-            --photo-margin-sp: 2.5%;   /* スマホ時の余白 (2.5%) */
+            --photo-margin-pc: 10%;
+            --photo-margin-sp: 2.5%;
             
-            --thumb-width: 180px;
-            --thumb-gap: 20px;
+            /* [PC] サムネイル設定 */
+            --thumb-width-pc: 240px;    /* PC版のサムネイルサイズ（大きくしました） */
+            --thumb-gap-pc: 40px;      /* PC版のサムネイル同士の隙間 */
+            --page-padding-pc: 80px;   /* PC版の全体の余白 */
+
+            /* [SP] サムネイル設定 */
+            --thumb-gap-sp: 5px;       /* スマホ版の隙間（狭くしました） */
+            --page-padding-sp: 10px;   /* スマホ版の全体の余白（狭くしました） */
+
             --ui-font-size: 13px;
             --ui-font-weight: 400;
-            --ui-spacing: 1.0em;
             --ui-letter-spacing: 0.15em;
+            --ui-line-height: 1.5;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: var(--font-family);
-            font-weight: var(--ui-font-weight);
             overflow: hidden; 
         }
 
@@ -46,49 +48,40 @@
             top: 40px;
             left: 40px;
             z-index: 100;
-            cursor: pointer;
             font-size: var(--ui-font-size);
             letter-spacing: var(--ui-letter-spacing);
             user-select: none;
-            display: flex;
-            align-items: center;
-            line-height: 1;
+            line-height: var(--ui-line-height);
+            text-align: left;
         }
 
-        #photo-number {
-            margin-right: var(--ui-spacing);
-            font-variant-numeric: tabular-nums;
-        }
+        .nav-item { cursor: pointer; display: block; text-transform: uppercase; }
+        .underline { text-decoration: underline; text-underline-offset: 3px; }
 
-        /* スマホ時のナビゲーション (右下固定) */
+        #project-list { display: none; }
+        #current-project-info { display: block; }
+
         @media (max-width: 768px) {
             #nav-ui {
-                top: auto;
-                left: auto;
-                right: 25px;
-                bottom: 25px;
+                top: auto; left: auto;
+                right: 25px; bottom: 25px;
+                text-align: right;
             }
         }
 
         /* --- 1写真ページ --- */
         #photo-page {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
+            display: flex; width: 100vw; height: 100vh;
+            justify-content: center; align-items: center;
             position: relative;
         }
 
         .single-photo {
-            /* デフォルト（PC）の余白設定 */
             max-width: calc(100% - (var(--photo-margin-pc) * 2));
             max-height: calc(100% - (var(--photo-margin-pc) * 2));
             object-fit: contain;
-            user-select: none;
         }
 
-        /* スマホ時の写真サイズ設定 */
         @media (max-width: 768px) {
             .single-photo {
                 max-width: calc(100% - (var(--photo-margin-sp) * 2));
@@ -96,56 +89,57 @@
             }
         }
 
-        .click-area {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 50%;
-            z-index: 10;
-        }
+        .click-area { position: absolute; top: 0; height: 100%; width: 50%; z-index: 10; }
         .prev-area { left: 0; cursor: w-resize; }
         .next-area { right: 0; cursor: e-resize; }
 
         /* --- 2インデックスページ --- */
         #index-page {
             display: none;
-            padding: 100px 40px;
+            padding: var(--page-padding-pc); /* PC版の大きな余白 */
             box-sizing: border-box;
-            width: 100%;
-            height: 100vh;
+            width: 100%; height: 100vh;
             overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
-        }
-
-        @media (max-width: 768px) {
-            #index-page {
-                padding: 40px 40px 100px 40px; 
-            }
         }
 
         .thumbnail-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(var(--thumb-width), 1fr));
-            gap: var(--thumb-gap);
+            /* PC版：指定のサイズで自動配置 */
+            grid-template-columns: repeat(auto-fill, minmax(var(--thumb-width-pc), 1fr));
+            gap: var(--thumb-gap-pc);
             align-content: start;
         }
 
-        .thumb {
-            width: 100%;
-            height: auto;
-            cursor: pointer;
-            display: block;
+        @media (max-width: 768px) {
+            #index-page { 
+                padding: var(--page-padding-sp); /* スマホ版の狭い余白 */
+                padding-bottom: 160px; /* ナビを避けるための下部余白 */
+            }
+            .thumbnail-container {
+                /* スマホ版：強制的に3列配置 */
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--thumb-gap-sp);
+            }
         }
 
-        /* 表示切り替え */
+        .thumb { width: 100%; height: auto; cursor: pointer; display: block; }
+
+        /* モード切り替え */
         body.mode-index #photo-page { display: none; }
         body.mode-index #index-page { display: block; }
+        body.mode-index #project-list { display: block; }
+        body.mode-index #current-project-info { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="nav-ui" onclick="toggleMode()">
-        <span id="photo-number">--</span> INDEX
+    <div id="nav-ui">
+        <div class="nav-item underline" onclick="toggleMode()">INDEX</div>
+        <div id="project-list"></div>
+        <div id="current-project-info">
+            <span id="current-project" class="underline">SELECT</span><br>
+            <span id="photo-number">01</span>
+        </div>
     </div>
 
     <div id="photo-page">
@@ -159,78 +153,108 @@
     </div>
 
     <script>
-        /* --- [重要] 写真の設定 --- */
-        const TOTAL_PHOTOS = 12;      
-        const PHOTO_DIR = "photo/";   
-        const FILE_PREFIX = "photo_"; 
-        const FILE_EXT = ".jpg";      
+        const PROJECTS = {
+            "select": 12,
+            "wien": 8,
+            "amami": 10
+        };
+        const PHOTO_DIR = "photo/";
+        const FILE_EXT = ".jpg";
 
-        const photos = [];
-        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
-            const fileName = FILE_PREFIX + i.toString().padStart(3, '0') + FILE_EXT;
-            photos.push(PHOTO_DIR + fileName);
-        }
+        let currentCategory = "select"; 
+        let currentIndex = 0;
+        let photos = [];
 
-        // ランダム開始
-        let currentIndex = Math.floor(Math.random() * photos.length);
-        
         const body = document.body;
         const mainPhoto = document.getElementById('main-photo');
         const photoNumber = document.getElementById('photo-number');
+        const currentProjectLabel = document.getElementById('current-project');
         const thumbList = document.getElementById('thumb-list');
+        const projectListUI = document.getElementById('project-list');
 
         function init() {
+            renderProjectMenu();
+            loadProject(currentCategory, true);
+        }
+
+        function renderProjectMenu() {
+            projectListUI.innerHTML = '';
+            Object.keys(PROJECTS).forEach(key => {
+                const div = document.createElement('div');
+                div.className = 'nav-item';
+                if(key === currentCategory) div.classList.add('underline');
+                div.innerText = key;
+                div.onclick = (e) => {
+                    e.stopPropagation();
+                    loadProject(key, false);
+                };
+                projectListUI.appendChild(div);
+            });
+        }
+
+        function loadProject(category, isRandomStart) {
+            currentCategory = category;
+            photos = [];
+            const count = PROJECTS[category];
+
+            for (let i = 1; i <= count; i++) {
+                const fileName = `${category}_${i.toString().padStart(3, '0')}${FILE_EXT}`;
+                photos.push(PHOTO_DIR + fileName);
+            }
+
+            renderProjectMenu();
+            renderThumbnails();
+
+            if (isRandomStart) {
+                currentIndex = Math.floor(Math.random() * photos.length);
+            } else {
+                currentIndex = 0;
+            }
+            
+            updatePhotoUI();
+        }
+
+        function renderThumbnails() {
+            thumbList.innerHTML = '';
             photos.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
                 img.className = 'thumb';
                 img.id = 'thumb-' + index;
-                img.loading = "lazy";
-                img.onclick = (e) => {
-                    e.stopPropagation();
-                    selectPhoto(index);
-                };
+                img.onclick = () => selectPhoto(index);
                 thumbList.appendChild(img);
             });
-            updatePhoto();
         }
 
-        function updatePhoto() {
+        function updatePhotoUI() {
             mainPhoto.src = photos[currentIndex];
-            if (!body.classList.contains('mode-index')) {
-                photoNumber.style.display = 'inline';
-                photoNumber.innerText = (currentIndex + 1).toString().padStart(2, '0');
-            }
+            currentProjectLabel.innerText = currentCategory.toUpperCase();
+            photoNumber.innerText = (currentIndex + 1).toString().padStart(2, '0');
         }
 
         function changePhoto(step) {
             currentIndex += step;
             if (currentIndex >= photos.length) currentIndex = 0;
             if (currentIndex < 0) currentIndex = photos.length - 1;
-            updatePhoto();
+            updatePhotoUI();
         }
 
         function toggleMode() {
             if (body.classList.contains('mode-index')) {
                 body.classList.remove('mode-index');
-                updatePhoto();
             } else {
                 body.classList.add('mode-index');
-                photoNumber.style.display = 'none'; 
-                
                 setTimeout(() => {
-                    const targetThumb = document.getElementById('thumb-' + currentIndex);
-                    if (targetThumb) {
-                        targetThumb.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
+                    const target = document.getElementById('thumb-' + currentIndex);
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 10);
             }
         }
 
         function selectPhoto(index) {
             currentIndex = index;
+            updatePhotoUI();
             body.classList.remove('mode-index');
-            updatePhoto();
         }
 
         init();
