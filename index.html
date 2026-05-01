@@ -1,203 +1,230 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>N</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: 'Roboto', sans-serif;
-      font-weight: 100;
-      font-size: 14px;
-      overflow: hidden;
-    nav {
-      position: fixed;
-      top: 15px;
-      left: 20px;
-      background: none;
-      padding: 20px;
-      border-radius: 4px;
-      z-index: 100;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Portfolio</title>
+    <!-- Google Fonts から Jost を読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap" rel="stylesheet">
 
-      /* 横並びに */
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-    nav a {
-      display: block;
-      text-decoration: none;
-      color: #333;
-    }
-    #counter {
-      background: none;
-      color: black;
-      padding: 5px 10px;
-      border-radius: 3px;
-      margin-top: 0;
-      white-space: nowrap;
-    }
-    .page {
-      display: none;
-    }
-    .active {
-      display: block;
-    }
-    #photo-page {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      text-align: center;
-      overflow: hidden;
-    }
-    #photo-container {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
-    #photo-container img {
-      width: calc(100vw - 20%);
-      height: auto;
-      max-height: 80vh;
-      object-fit: contain;
-    }
-    @media (max-width: 600px) {
-      #photo-container img {
-        width: calc(100vw - 10%);
-        max-height: 90vh;
-      }
-      #thumbnail-page {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-content: flex-start;
-      gap: 20px;
-      width: 100vw;
-      height: 100vh;
-      padding: 10vh 10vw 10vh 10vw;
-      overflow-y: scroll;
-    }
-    }
-      #thumbnail-page {
-        padding-left: 5vw;
-        padding-right: 5vw;
-      }
-    }
-    #photo-page .overlay {
-      position: absolute;
-      top: 0;
-      width: 50%;
-      height: 100%;
-      cursor: pointer;
-    }
-    #left-click {
-      left: 0;
-    }
-    #right-click {
-      right: 0;
-    }
-    #thumbnail-page {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-content: flex-start;
-      gap: 10px;
-      width: 100vw;
-      height: 100vh;
-      padding: 5vh 5vw 5vh 5vw;
-      overflow-y: scroll;
-    }
-    .thumb {
-      width: calc(30% - 10px);
-      max-width: 300px;
-      height: auto;
-      object-fit: contain;
-      cursor: pointer;
-      aspect-ratio: 1 / 1;
-    }
-  </style>
+    <style>
+        /* --- [調整可能] 基本設定 --- */
+        :root {
+            --bg-color: #ffffff;       /* 背景色 */
+            --text-color: #000000;     /* 文字色 */
+            --font-family: 'Jost', sans-serif;
+            --photo-margin: 10%;       /* 1写真ページの上下左右余白 */
+            --thumb-width: 180px;      /* インデックスページのサムネイル最小幅 */
+            --thumb-gap: 20px;         /* サムネイル間の隙間 */
+            --ui-font-size: 13px;      /* テキストのサイズ */
+            --ui-font-weight: 400;     /* テキストの太さ */
+            --ui-spacing: 1.0em;       /* 数字とINDEXの間の余白 */
+            --ui-letter-spacing: 0.15em;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            font-weight: var(--ui-font-weight);
+            overflow: hidden; /* 基本はスクロール禁止 */
+        }
+
+        /* --- 共通：ナビゲーション (デフォルト：PC用 左上固定) --- */
+        #nav-ui {
+            position: fixed;
+            top: 40px;      /* PC時の上からの距離 */
+            left: 40px;     /* PC時の左からの距離 */
+            z-index: 100;
+            cursor: pointer;
+            font-size: var(--ui-font-size);
+            letter-spacing: var(--ui-letter-spacing);
+            user-select: none;
+            display: flex;
+            align-items: center;
+            line-height: 1;
+        }
+
+        #photo-number {
+            margin-right: var(--ui-spacing);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* --- スマホ時のナビゲーション (右下固定へ上書き) --- */
+        @media (max-width: 768px) {
+            #nav-ui {
+                top: auto;
+                left: auto;
+                right: 30px; /* スマホ時の右からの距離 */
+                bottom: 30px; /* スマホ時の下からの距離 */
+            }
+        }
+
+        /* --- 1写真ページ --- */
+        #photo-page {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .single-photo {
+            max-width: calc(100% - (var(--photo-margin) * 2));
+            max-height: calc(100% - (var(--photo-margin) * 2));
+            object-fit: contain;
+            user-select: none;
+        }
+
+        .click-area {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            z-index: 10;
+        }
+        .prev-area { left: 0; cursor: w-resize; }
+        .next-area { right: 0; cursor: e-resize; }
+
+        /* --- 2インデックスページ --- */
+        #index-page {
+            display: none;
+            padding: 100px 40px; /* PCでのナビと被らないよう上部余白を確保 */
+            box-sizing: border-box;
+            width: 100%;
+            height: 100vh;
+            /* 内容が溢れた時だけスクロールを許可する設定 */
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* スマホ時は下部ナビと被らないように調整 */
+        @media (max-width: 768px) {
+            #index-page {
+                padding: 40px 40px 120px 40px; 
+            }
+        }
+
+        .thumbnail-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--thumb-width), 1fr));
+            gap: var(--thumb-gap);
+            /* コンテンツが少ない時に中央寄せにする場合は以下を追加（お好みで） */
+            align-content: start;
+        }
+
+        .thumb {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            display: block;
+            opacity: 1; /* 半透明を解除し、最初から元の色に */
+        }
+
+        /* 表示切り替え制御用クラス */
+        body.mode-index #photo-page { display: none; }
+        body.mode-index #index-page { display: block; }
+    </style>
 </head>
 <body>
-  <nav>
-    <a href="#" onclick="showPage('thumbnail')">INDEX</a>
-    <div id="counter">01</div>
-  </nav>
 
-  <div id="photo-page" class="page active">
-    <div id="photo-container">
-      <img id="main-photo" alt="写真" />
+    <div id="nav-ui" onclick="toggleMode()">
+        <span id="photo-number">--</span> INDEX
     </div>
-    <div id="left-click" class="overlay" onclick="prevPhoto()"></div>
-    <div id="right-click" class="overlay" onclick="nextPhoto()"></div>
-  </div>
 
-  <div id="thumbnail-page" class="page">
-    <!-- サムネイル画像：クリックで写真ページへ移動 -->
+    <div id="photo-page">
+        <div class="click-area prev-area" onclick="changePhoto(-1)"></div>
+        <div class="click-area next-area" onclick="changePhoto(1)"></div>
+        <img id="main-photo" class="single-photo" src="" alt="">
+    </div>
+
+    <div id="index-page">
+        <div class="thumbnail-container" id="thumb-list"></div>
+    </div>
+
     <script>
-      for (let i = 1; i <= 17; i++) {
-        const num = String(i).padStart(3, "0");
-        document.write(
-          `<img src="photo_${num}.jpg" class="thumb" onclick="goToPhoto(${i - 1})">`
-        );
-      }
+        /* --- [重要] 写真の設定 --- */
+        const TOTAL_PHOTOS = 12;      
+        const PHOTO_DIR = "photo/";   
+        const FILE_PREFIX = "photo_"; 
+        const FILE_EXT = ".jpg";      
+
+        const photos = [];
+        for (let i = 1; i <= TOTAL_PHOTOS; i++) {
+            const fileName = FILE_PREFIX + i.toString().padStart(3, '0') + FILE_EXT;
+            photos.push(PHOTO_DIR + fileName);
+        }
+
+        let currentIndex = Math.floor(Math.random() * photos.length);
+        
+        const body = document.body;
+        const mainPhoto = document.getElementById('main-photo');
+        const photoNumber = document.getElementById('photo-number');
+        const thumbList = document.getElementById('thumb-list');
+
+        function init() {
+            photos.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'thumb';
+                img.id = 'thumb-' + index;
+                img.loading = "lazy";
+                img.onclick = (e) => {
+                    e.stopPropagation();
+                    selectPhoto(index);
+                };
+                thumbList.appendChild(img);
+            });
+            updatePhoto();
+        }
+
+        function updatePhoto() {
+            mainPhoto.src = photos[currentIndex];
+            if (!body.classList.contains('mode-index')) {
+                photoNumber.style.display = 'inline';
+                photoNumber.innerText = (currentIndex + 1).toString().padStart(2, '0');
+            }
+        }
+
+        function changePhoto(step) {
+            currentIndex += step;
+            if (currentIndex >= photos.length) currentIndex = 0;
+            if (currentIndex < 0) currentIndex = photos.length - 1;
+            updatePhoto();
+        }
+
+        function toggleMode() {
+            if (body.classList.contains('mode-index')) {
+                body.classList.remove('mode-index');
+                updatePhoto();
+            } else {
+                body.classList.add('mode-index');
+                photoNumber.style.display = 'none'; 
+                
+                // インデックスを開いた時、現在表示中の写真までスムーズに移動
+                setTimeout(() => {
+                    const targetThumb = document.getElementById('thumb-' + currentIndex);
+                    if (targetThumb) {
+                        targetThumb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 10);
+            }
+        }
+
+        function selectPhoto(index) {
+            currentIndex = index;
+            body.classList.remove('mode-index');
+            updatePhoto();
+        }
+
+        init();
     </script>
-  </div>
-
-  <script>
-    const pages = {
-      photo: document.getElementById("photo-page"),
-      thumbnail: document.getElementById("thumbnail-page"),
-    };
-
-    function showPage(page) {
-      for (let key in pages) pages[key].classList.remove("active");
-      pages[page].classList.add("active");
-      // INDEXページではカウンター非表示、写真ページで表示
-      document.getElementById("counter").style.display =
-        page === "photo" ? "block" : "none";
-    }
-
-    const photos = [];
-    for (let i = 1; i <= 17; i++) {
-      const num = String(i).padStart(3, "0");
-      photos.push(`photo_${num}.jpg`);
-    }
-    let current = Math.floor(Math.random() * photos.length);
-updatePhoto(); // ランダム画像を反映するために追加（もしくは既存の場所で実行）
-
-    function updatePhoto() {
-      document.getElementById("main-photo").src = photos[current];
-      // カウンターは2桁表示、例: 01, 02, ...
-      document.getElementById("counter").textContent = String(current + 1).padStart(
-        2,
-        "0"
-      );
-    }
-
-    function prevPhoto() {
-      current = (current - 1 + photos.length) % photos.length;
-      updatePhoto();
-    }
-
-    function nextPhoto() {
-      current = (current + 1) % photos.length;
-      updatePhoto();
-    }
-
-    function goToPhoto(index) {
-      current = index;
-      updatePhoto();
-      showPage("photo");
-    }
-  </script>
 </body>
 </html>
