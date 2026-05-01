@@ -12,15 +12,19 @@
     <style>
         /* --- [調整可能] 基本設定 --- */
         :root {
-            --bg-color: #ffffff;       /* 背景色 */
-            --text-color: #000000;     /* 文字色 */
+            --bg-color: #ffffff;
+            --text-color: #000000;
             --font-family: 'Jost', sans-serif;
-            --photo-margin: 10%;       /* 1写真ページの上下左右余白 */
-            --thumb-width: 180px;      /* インデックスページのサムネイル最小幅 */
-            --thumb-gap: 20px;         /* サムネイル間の隙間 */
-            --ui-font-size: 13px;      /* テキストのサイズ */
-            --ui-font-weight: 400;     /* テキストの太さ */
-            --ui-spacing: 1.0em;       /* 数字とINDEXの間の余白 */
+            
+            /* 余白の設定 */
+            --photo-margin-pc: 10%;    /* PC時の余白 */
+            --photo-margin-sp: 2.5%;   /* スマホ時の余白 (2.5%) */
+            
+            --thumb-width: 180px;
+            --thumb-gap: 20px;
+            --ui-font-size: 13px;
+            --ui-font-weight: 400;
+            --ui-spacing: 1.0em;
             --ui-letter-spacing: 0.15em;
         }
 
@@ -33,14 +37,14 @@
             color: var(--text-color);
             font-family: var(--font-family);
             font-weight: var(--ui-font-weight);
-            overflow: hidden; /* 基本はスクロール禁止 */
+            overflow: hidden; 
         }
 
-        /* --- 共通：ナビゲーション (デフォルト：PC用 左上固定) --- */
+        /* --- 共通：ナビゲーション --- */
         #nav-ui {
             position: fixed;
-            top: 40px;      /* PC時の上からの距離 */
-            left: 40px;     /* PC時の左からの距離 */
+            top: 40px;
+            left: 40px;
             z-index: 100;
             cursor: pointer;
             font-size: var(--ui-font-size);
@@ -56,13 +60,13 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* --- スマホ時のナビゲーション (右下固定へ上書き) --- */
+        /* スマホ時のナビゲーション (右下固定) */
         @media (max-width: 768px) {
             #nav-ui {
                 top: auto;
                 left: auto;
-                right: 30px; /* スマホ時の右からの距離 */
-                bottom: 30px; /* スマホ時の下からの距離 */
+                right: 25px;
+                bottom: 25px;
             }
         }
 
@@ -77,10 +81,19 @@
         }
 
         .single-photo {
-            max-width: calc(100% - (var(--photo-margin) * 2));
-            max-height: calc(100% - (var(--photo-margin) * 2));
+            /* デフォルト（PC）の余白設定 */
+            max-width: calc(100% - (var(--photo-margin-pc) * 2));
+            max-height: calc(100% - (var(--photo-margin-pc) * 2));
             object-fit: contain;
             user-select: none;
+        }
+
+        /* スマホ時の写真サイズ設定 */
+        @media (max-width: 768px) {
+            .single-photo {
+                max-width: calc(100% - (var(--photo-margin-sp) * 2));
+                max-height: calc(100% - (var(--photo-margin-sp) * 2));
+            }
         }
 
         .click-area {
@@ -96,19 +109,17 @@
         /* --- 2インデックスページ --- */
         #index-page {
             display: none;
-            padding: 100px 40px; /* PCでのナビと被らないよう上部余白を確保 */
+            padding: 100px 40px;
             box-sizing: border-box;
             width: 100%;
             height: 100vh;
-            /* 内容が溢れた時だけスクロールを許可する設定 */
             overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
         }
 
-        /* スマホ時は下部ナビと被らないように調整 */
         @media (max-width: 768px) {
             #index-page {
-                padding: 40px 40px 120px 40px; 
+                padding: 40px 40px 100px 40px; 
             }
         }
 
@@ -116,7 +127,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(var(--thumb-width), 1fr));
             gap: var(--thumb-gap);
-            /* コンテンツが少ない時に中央寄せにする場合は以下を追加（お好みで） */
             align-content: start;
         }
 
@@ -125,10 +135,9 @@
             height: auto;
             cursor: pointer;
             display: block;
-            opacity: 1; /* 半透明を解除し、最初から元の色に */
         }
 
-        /* 表示切り替え制御用クラス */
+        /* 表示切り替え */
         body.mode-index #photo-page { display: none; }
         body.mode-index #index-page { display: block; }
     </style>
@@ -162,6 +171,7 @@
             photos.push(PHOTO_DIR + fileName);
         }
 
+        // ランダム開始
         let currentIndex = Math.floor(Math.random() * photos.length);
         
         const body = document.body;
@@ -208,7 +218,6 @@
                 body.classList.add('mode-index');
                 photoNumber.style.display = 'none'; 
                 
-                // インデックスを開いた時、現在表示中の写真までスムーズに移動
                 setTimeout(() => {
                     const targetThumb = document.getElementById('thumb-' + currentIndex);
                     if (targetThumb) {
