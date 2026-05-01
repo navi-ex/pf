@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Portfolio v2.02</title>
+    <title>Minimal Portfolio v2.03</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -16,16 +16,14 @@
             --font-family: 'Jost', sans-serif;
             
             --photo-margin-pc: 10%;
-            --photo-margin-sp: 2.5%;
+            --photo-margin-sp: 2.5%; /* スマホ時の上下左右余白 */
             
-            /* [PC] サムネイル設定 */
-            --thumb-width-pc: 240px;    /* PC版のサムネイルサイズ（大きくしました） */
-            --thumb-gap-pc: 40px;      /* PC版のサムネイル同士の隙間 */
-            --page-padding-pc: 80px;   /* PC版の全体の余白 */
+            --thumb-width-pc: 240px;
+            --thumb-gap-pc: 40px;
+            --page-padding-pc: 80px;
 
-            /* [SP] サムネイル設定 */
-            --thumb-gap-sp: 5px;       /* スマホ版の隙間（狭くしました） */
-            --page-padding-sp: 10px;   /* スマホ版の全体の余白（狭くしました） */
+            --thumb-gap-sp: 5px;
+            --page-padding-sp: 10px;
 
             --ui-font-size: 13px;
             --ui-font-weight: 400;
@@ -71,9 +69,13 @@
 
         /* --- 1写真ページ --- */
         #photo-page {
-            display: flex; width: 100vw; height: 100vh;
-            justify-content: center; align-items: center;
+            display: flex; 
+            width: 100vw; 
+            height: 100vh;
+            justify-content: center; /* 横方向は中央 */
+            align-items: center;     /* PCは縦方向も中央 */
             position: relative;
+            box-sizing: border-box;
         }
 
         .single-photo {
@@ -82,10 +84,17 @@
             object-fit: contain;
         }
 
+        /* スマホ時の配置設定 */
         @media (max-width: 768px) {
+            #photo-page {
+                align-items: flex-start; /* 上寄せに変更 */
+                padding-top: var(--photo-margin-sp); /* 上部余白 2.5% */
+            }
             .single-photo {
+                /* 横幅も 2.5% の余白を維持 */
                 max-width: calc(100% - (var(--photo-margin-sp) * 2));
-                max-height: calc(100% - (var(--photo-margin-sp) * 2));
+                /* 縦幅は画面の下部まで使い切らないよう制限（ナビとの重なり防止） */
+                max-height: calc(100% - (var(--photo-margin-sp) * 4)); 
             }
         }
 
@@ -96,7 +105,7 @@
         /* --- 2インデックスページ --- */
         #index-page {
             display: none;
-            padding: var(--page-padding-pc); /* PC版の大きな余白 */
+            padding: var(--page-padding-pc);
             box-sizing: border-box;
             width: 100%; height: 100vh;
             overflow-y: auto; 
@@ -104,7 +113,6 @@
 
         .thumbnail-container {
             display: grid;
-            /* PC版：指定のサイズで自動配置 */
             grid-template-columns: repeat(auto-fill, minmax(var(--thumb-width-pc), 1fr));
             gap: var(--thumb-gap-pc);
             align-content: start;
@@ -112,11 +120,10 @@
 
         @media (max-width: 768px) {
             #index-page { 
-                padding: var(--page-padding-sp); /* スマホ版の狭い余白 */
-                padding-bottom: 160px; /* ナビを避けるための下部余白 */
+                padding: var(--page-padding-sp);
+                padding-bottom: 160px;
             }
             .thumbnail-container {
-                /* スマホ版：強制的に3列配置 */
                 grid-template-columns: repeat(3, 1fr);
                 gap: var(--thumb-gap-sp);
             }
@@ -124,7 +131,6 @@
 
         .thumb { width: 100%; height: auto; cursor: pointer; display: block; }
 
-        /* モード切り替え */
         body.mode-index #photo-page { display: none; }
         body.mode-index #index-page { display: block; }
         body.mode-index #project-list { display: block; }
@@ -153,6 +159,7 @@
     </div>
 
     <script>
+        // プロジェクトごとの写真枚数設定
         const PROJECTS = {
             "select": 12,
             "wien": 8,
