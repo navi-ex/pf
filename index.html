@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Portfolio v2.03</title>
+    <title>Minimal Portfolio v2.06</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
             --font-family: 'Jost', sans-serif;
             
             --photo-margin-pc: 10%;
-            --photo-margin-sp: 2.5%; /* スマホ時の上下左右余白 */
+            --photo-margin-sp: 2.5%;
             
             --thumb-width-pc: 240px;
             --thumb-gap-pc: 40px;
@@ -56,8 +56,10 @@
         .nav-item { cursor: pointer; display: block; text-transform: uppercase; }
         .underline { text-decoration: underline; text-underline-offset: 3px; }
 
+        #index-toggle { cursor: pointer; }
         #project-list { display: none; }
         #current-project-info { display: block; }
+        #photo-counter { font-variant-numeric: tabular-nums; }
 
         @media (max-width: 768px) {
             #nav-ui {
@@ -69,11 +71,8 @@
 
         /* --- 1写真ページ --- */
         #photo-page {
-            display: flex; 
-            width: 100vw; 
-            height: 100vh;
-            justify-content: center; /* 横方向は中央 */
-            align-items: center;     /* PCは縦方向も中央 */
+            display: flex; width: 100vw; height: 100vh;
+            justify-content: center; align-items: center;
             position: relative;
             box-sizing: border-box;
         }
@@ -84,16 +83,13 @@
             object-fit: contain;
         }
 
-        /* スマホ時の配置設定 */
         @media (max-width: 768px) {
             #photo-page {
-                align-items: flex-start; /* 上寄せに変更 */
-                padding-top: var(--photo-margin-sp); /* 上部余白 2.5% */
+                align-items: flex-start;
+                padding-top: var(--photo-margin-sp);
             }
             .single-photo {
-                /* 横幅も 2.5% の余白を維持 */
                 max-width: calc(100% - (var(--photo-margin-sp) * 2));
-                /* 縦幅は画面の下部まで使い切らないよう制限（ナビとの重なり防止） */
                 max-height: calc(100% - (var(--photo-margin-sp) * 4)); 
             }
         }
@@ -135,16 +131,17 @@
         body.mode-index #index-page { display: block; }
         body.mode-index #project-list { display: block; }
         body.mode-index #current-project-info { display: none; }
+        body.mode-index #index-toggle { pointer-events: none; cursor: default; }
     </style>
 </head>
 <body>
 
     <div id="nav-ui">
-        <div class="nav-item underline" onclick="toggleMode()">INDEX</div>
+        <div id="index-toggle" class="nav-item underline" onclick="toggleMode()">INDEX</div>
         <div id="project-list"></div>
         <div id="current-project-info">
             <span id="current-project" class="underline">SELECT</span><br>
-            <span id="photo-number">01</span>
+            <span id="photo-counter">01/00</span>
         </div>
     </div>
 
@@ -159,11 +156,11 @@
     </div>
 
     <script>
-        // プロジェクトごとの写真枚数設定
+        // --- v2.06: 枚数設定の更新 ---
         const PROJECTS = {
-            "select": 12,
-            "wien": 8,
-            "amami": 10
+            "select": 17,
+            "wien": 94,
+            "amami": 22
         };
         const PHOTO_DIR = "photo/";
         const FILE_EXT = ".jpg";
@@ -174,7 +171,7 @@
 
         const body = document.body;
         const mainPhoto = document.getElementById('main-photo');
-        const photoNumber = document.getElementById('photo-number');
+        const photoCounter = document.getElementById('photo-counter');
         const currentProjectLabel = document.getElementById('current-project');
         const thumbList = document.getElementById('thumb-list');
         const projectListUI = document.getElementById('project-list');
@@ -236,7 +233,10 @@
         function updatePhotoUI() {
             mainPhoto.src = photos[currentIndex];
             currentProjectLabel.innerText = currentCategory.toUpperCase();
-            photoNumber.innerText = (currentIndex + 1).toString().padStart(2, '0');
+            
+            const currentNum = (currentIndex + 1).toString().padStart(2, '0');
+            const totalNum = photos.length.toString().padStart(2, '0');
+            photoCounter.innerText = `${currentNum}/${totalNum}`;
         }
 
         function changePhoto(step) {
