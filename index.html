@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Portfolio v2.06</title>
+    <title>Minimal Portfolio v2.07</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -31,6 +31,7 @@
             --ui-line-height: 1.5;
         }
 
+        /* ズレ防止のため html/body を固定 */
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
@@ -38,6 +39,7 @@
             color: var(--text-color);
             font-family: var(--font-family);
             overflow: hidden; 
+            position: fixed; /* 全体の位置を固定 */
         }
 
         /* --- 共通：ナビゲーション --- */
@@ -71,10 +73,14 @@
 
         /* --- 1写真ページ --- */
         #photo-page {
-            display: flex; width: 100vw; height: 100vh;
-            justify-content: center; align-items: center;
+            display: flex; 
+            width: 100vw; 
+            height: 100vh;
+            justify-content: center; 
+            align-items: center;
             position: relative;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         .single-photo {
@@ -103,8 +109,10 @@
             display: none;
             padding: var(--page-padding-pc);
             box-sizing: border-box;
-            width: 100%; height: 100vh;
+            width: 100%; 
+            height: 100vh;
             overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; /* iOSでのスムーズなスクロール */
         }
 
         .thumbnail-container {
@@ -156,7 +164,6 @@
     </div>
 
     <script>
-        // --- v2.06: 枚数設定の更新 ---
         const PROJECTS = {
             "select": 17,
             "wien": 94,
@@ -246,13 +253,22 @@
             updatePhotoUI();
         }
 
+        // 写真ページに戻る際にスクロールをリセットする関数
+        function resetScroll() {
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            body.scrollTop = 0;
+        }
+
         function toggleMode() {
             if (body.classList.contains('mode-index')) {
                 body.classList.remove('mode-index');
+                resetScroll(); // 写真ページに戻るときにリセット
             } else {
                 body.classList.add('mode-index');
                 setTimeout(() => {
                     const target = document.getElementById('thumb-' + currentIndex);
+                    // scrollIntoViewは親要素(index-page)内でのスクロールを誘発する
                     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 10);
             }
@@ -262,6 +278,7 @@
             currentIndex = index;
             updatePhotoUI();
             body.classList.remove('mode-index');
+            resetScroll(); // 写真表示の瞬間にスクロールを0にする
         }
 
         init();
