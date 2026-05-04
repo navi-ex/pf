@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>minimal portfolio v2.10</title>
+    <title>minimal portfolio v2.11</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -26,7 +26,8 @@
 
             --ui-font-size: 13px;
             --ui-font-weight: 400;
-            --ui-letter-spacing: 0.15em;
+            /* v2.11: 文字間を 0.15em から 0.05em へ短縮 */
+            --ui-letter-spacing: 0.05em; 
             --ui-line-height: 1.5;
         }
 
@@ -56,7 +57,6 @@
             text-align: left;
         }
 
-        /* テキストをすべて小文字に強制 */
         .nav-item { cursor: pointer; display: block; text-transform: lowercase; }
         .underline { text-decoration: underline; text-underline-offset: 3px; }
 
@@ -152,7 +152,6 @@
 <body>
 
     <div id="nav-ui">
-        <!-- テキストを小文字に変更 -->
         <div id="index-toggle" class="nav-item underline" onclick="toggleMode()">index</div>
         <div id="project-list"></div>
         <div id="current-project-info">
@@ -172,7 +171,6 @@
     </div>
 
     <script>
-        // --- v2.10: thailandを追加し、小文字キーで定義 ---
         const PROJECTS = {
             "select": 17,
             "wien": 94,
@@ -205,7 +203,7 @@
                 const div = document.createElement('div');
                 div.className = 'nav-item';
                 if(key === currentCategory) div.classList.add('underline');
-                div.innerText = key; // CSSで小文字化されるが、データとしても小文字
+                div.innerText = key;
                 div.onclick = (e) => {
                     e.stopPropagation();
                     loadProject(key, false);
@@ -250,7 +248,6 @@
 
         function updatePhotoUI() {
             mainPhoto.src = photos[currentIndex];
-            // 小文字で表示
             currentProjectLabel.innerText = currentCategory.toLowerCase();
             
             const currentNum = (currentIndex + 1).toString().padStart(2, '0');
@@ -278,7 +275,6 @@
                 body.classList.add('mode-index');
                 setTimeout(() => {
                     const target = document.getElementById('thumb-' + currentIndex);
-                    // behavior を 'auto' にして即座に移動
                     if (target) target.scrollIntoView({ behavior: 'auto', block: 'center' });
                 }, 10);
             }
