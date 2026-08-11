@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>minimal portfolio v2.15</title>
+    <title>minimal portfolio v2.16</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- v2.15: Inter フォントの読み込み -->
@@ -17,6 +17,8 @@
             --font-family: 'Inter', sans-serif; /* Inter を適用 */
             
             --photo-margin-pc: 10%;
+            /* v2.16: PCで縦写真だけ余白を小さく＝表示を大きくする */
+            --photo-margin-pc-portrait: 5%;
             --photo-margin-sp: 2.5%;
             
             --thumb-width-pc: 240px;
@@ -90,6 +92,13 @@
             max-width: calc(100% - (var(--photo-margin-pc) * 2));
             max-height: calc(100% - (var(--photo-margin-pc) * 2));
             object-fit: contain;
+        }
+
+        /* v2.16: PC表示のときだけ、縦写真をひとまわり大きく表示する */
+        @media (min-width: 769px) {
+            .single-photo.is-portrait {
+                max-height: calc(100% - (var(--photo-margin-pc-portrait) * 2));
+            }
         }
 
         @media (max-width: 768px) {
@@ -257,8 +266,17 @@
             });
         }
 
+        // v2.16: 表示中の写真が縦か横かを判定してクラスを付け替える
+        function applyOrientationClass() {
+            if (!mainPhoto.naturalWidth) return;
+            mainPhoto.classList.toggle('is-portrait', mainPhoto.naturalHeight > mainPhoto.naturalWidth);
+        }
+
         function updatePhotoUI() {
+            mainPhoto.classList.remove('is-portrait');
+            mainPhoto.onload = applyOrientationClass;
             mainPhoto.src = photos[currentIndex];
+            if (mainPhoto.complete) applyOrientationClass();
             currentProjectLabel.innerText = currentCategory.toLowerCase();
             
             const currentNum = (currentIndex + 1).toString().padStart(2, '0');
