@@ -3,10 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>minimal portfolio v2.16</title>
+
+    <!-- ===== [要編集] サイトの名乗り ===== -->
+    <!-- v2.18 = v2.17 + ファビコンのダークモード自動反転 / info のロゴを info.svg に変更 -->
+    <title>NP</title>
+    <meta name="description" content="東京を拠点に活動するアートディレクター / グラフィックデザイナーによる写真作品集。">
+
+    <!-- ===== ファビコン =====
+         favicon.svg は favicon_b.svg(黒) と favicon_w.svg(白) を1ファイルにまとめたもので、
+         ブラウザがダークモードのときだけ自動で白に反転する。
+         ※ link に media="(prefers-color-scheme: dark)" を書いて2ファイルを出し分ける方法は
+           ブラウザ対応がまちまちなため採用していない。 -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="favicon.ico" sizes="32x32">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- ===== OGP(SNSでURLを共有したときのカード表示) ===== -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="NP">
+    <meta property="og:title" content="NP">
+    <meta property="og:description" content="東京を拠点に活動するアートディレクター / グラフィックデザイナーによる写真作品集。">
+    <meta property="og:url" content="https://navi-ex.github.io/pf/">
+    <meta property="og:image" content="https://navi-ex.github.io/pf/ogp.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="ja_JP">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- v2.15: Inter フォントの読み込み -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
 
     <style>
@@ -14,13 +39,13 @@
         :root {
             --bg-color: #ffffff;
             --text-color: #000000;
-            --font-family: 'Inter', sans-serif; /* Inter を適用 */
-            
+            --font-family: 'Inter', sans-serif;
+
             --photo-margin-pc: 10%;
             /* v2.16: PCで縦写真だけ余白を小さく＝表示を大きくする */
             --photo-margin-pc-portrait: 5%;
             --photo-margin-sp: 2.5%;
-            
+
             --thumb-width-pc: 240px;
             --thumb-gap-pc: 40px;
             --page-padding-pc: 80px;
@@ -29,19 +54,39 @@
 
             --ui-font-size: 13px;
             --ui-font-weight: 400;
-            --ui-letter-spacing: 0.05em; 
+            --ui-letter-spacing: 0.05em;
             --ui-line-height: 1.5;
+
+            /* --- info ページ ---
+               v2.17: 左のナビゲーションと行の高さを完全に揃えるため、
+               info の行送りは --ui-line-height と同じ値を使う。
+               1行の高さ = 13px × 1.5 = 19.5px。空白1行もこれと同じ値にすることで、
+               ナビの各項目と info の各行が同じ高さに並ぶ。            */
+            --info-max-width: 480px;
+            --info-line-height: var(--ui-line-height);
+            --info-block-space: calc(var(--ui-font-size) * var(--ui-line-height)); /* 空白1行分 */
+            --info-padding-top-pc: 40px;  /* ナビの天端と揃える */
+            --info-padding-left-pc: 200px;/* ナビと重ならない位置まで送る */
+            --nav-info-space: 1.5em;   /* info の上に空ける行 */
+
+            /* info ページのロゴ(info.svg)まわり。役割が違う2つの値に分けてある。
+               --info-logo-band  : ロゴが入る「帯」の高さ。下に続く文章の位置を決めるので、
+                                   19.5px の倍数にすること(19.5 / 39 / 58.5 / 78px)。崩すと行が揃わなくなる。
+               --info-logo-height: ロゴそのものの大きさ。帯の中で上下中央に置かれるため、
+                                   ここは自由に変えてよい(行の揃いには影響しない)。 */
+            --info-logo-band: 39px;
+            --info-logo-height: 30px;
         }
 
         body, html {
             margin: 0; padding: 0;
-            width: 100%; 
+            width: 100%;
             height: 100%;
             height: 100dvh;
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: var(--font-family);
-            overflow: hidden; 
+            overflow: hidden;
             position: fixed;
             left: 0; top: 0;
         }
@@ -62,6 +107,9 @@
         .nav-item { cursor: pointer; display: block; text-transform: lowercase; }
         .underline { text-decoration: underline; text-underline-offset: 3px; }
 
+        /* info を1行空けて配置 */
+        .nav-info { margin-top: var(--nav-info-space); }
+
         #index-toggle { cursor: pointer; }
         #project-list { display: none; }
         #current-project-info { display: block; }
@@ -77,11 +125,11 @@
 
         /* --- 1写真ページ --- */
         #photo-page {
-            display: flex; 
-            width: 100%; 
+            display: flex;
+            width: 100%;
             height: 100%;
             height: 100dvh;
-            justify-content: center; 
+            justify-content: center;
             align-items: center;
             position: relative;
             box-sizing: border-box;
@@ -108,7 +156,7 @@
             }
             .single-photo {
                 max-width: calc(100% - (var(--photo-margin-sp) * 2));
-                max-height: calc(100% - (var(--photo-margin-sp) * 6)); 
+                max-height: calc(100% - (var(--photo-margin-sp) * 6));
             }
         }
 
@@ -116,17 +164,17 @@
         .prev-area { left: 0; cursor: w-resize; }
         .next-area { right: 0; cursor: e-resize; }
 
-        /* --- 2インデックスページ --- */
-        #index-page {
+        /* --- 2インデックスページ / 3infoページ 共通の下地 --- */
+        #index-page, #info-page {
             display: none;
             position: absolute;
             top: 0; left: 0;
             padding: var(--page-padding-pc);
             box-sizing: border-box;
-            width: 100%; 
+            width: 100%;
             height: 100%;
             height: 100dvh;
-            overflow-y: auto; 
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             z-index: 50;
         }
@@ -139,7 +187,7 @@
         }
 
         @media (max-width: 768px) {
-            #index-page { 
+            #index-page {
                 padding: var(--photo-margin-sp);
                 padding-bottom: 160px;
             }
@@ -151,20 +199,77 @@
 
         .thumb { width: 100%; height: auto; cursor: pointer; display: block; }
 
-        body.mode-index #photo-page { display: none; }
+        /* --- 3 info ページ --- */
+        #info-page {
+            font-size: var(--ui-font-size);
+            letter-spacing: var(--ui-letter-spacing);
+            line-height: var(--info-line-height);
+            padding-top: var(--info-padding-top-pc);
+            padding-left: var(--info-padding-left-pc);
+        }
+
+        .info-body {
+            max-width: var(--info-max-width);
+        }
+
+        /* v2.17: NPのテキストをマークの画像に置き換え。
+           帯(.info-name)の高さを行の高さの倍数にしておくことで、
+           下に続くテキストが左のナビと同じ行に並ぶ。
+           v2.18: ロゴの大きさを帯の高さから切り離し、帯の中で上下中央に配置。 */
+        .info-name {
+            height: var(--info-logo-band);
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--info-block-space);
+        }
+
+        .info-logo {
+            height: var(--info-logo-height);
+            width: auto;
+            display: block;
+        }
+
+        .info-block { margin-bottom: var(--info-block-space); }
+        .info-block:last-child { margin-bottom: 0; }
+
+        .info-link {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            #info-page {
+                padding: 25px;
+                padding-bottom: 160px;
+            }
+        }
+
+        /* --- モード切替 --- */
+        body.mode-index #photo-page,
+        body.mode-info  #photo-page { display: none; }
+
         body.mode-index #index-page { display: block; }
-        body.mode-index #project-list { display: block; }
-        body.mode-index #current-project-info { display: none; }
+        body.mode-info  #info-page  { display: block; }
+
+        body.mode-index #project-list,
+        body.mode-info  #project-list { display: block; }
+
+        body.mode-index #current-project-info,
+        body.mode-info  #current-project-info { display: none; }
+
+        /* index 表示中は index ラベル自体は押せない(info 表示中は押せる) */
         body.mode-index #index-toggle { pointer-events: none; cursor: default; }
     </style>
 </head>
 <body>
 
     <div id="nav-ui">
-        <div id="index-toggle" class="nav-item underline" onclick="toggleMode()">index</div>
+        <div id="index-toggle" class="nav-item underline" onclick="handleIndexClick()">index</div>
         <div id="project-list"></div>
         <div id="current-project-info">
-            <span id="current-project" class="underline" style="text-transform: lowercase;">select</span><br>
+            <span id="current-project" class="underline" style="text-transform: lowercase;">selects</span><br>
             <span id="photo-counter">01/00</span>
         </div>
     </div>
@@ -179,20 +284,52 @@
         <div class="thumbnail-container" id="thumb-list"></div>
     </div>
 
+    <!-- ===== [要編集] info ページの中身 ===== -->
+    <div id="info-page">
+        <div class="info-body">
+            <div class="info-name">
+                <img class="info-logo" src="info.svg" alt="NP">
+            </div>
+
+            <div class="info-block">
+                Art Director / Graphic Designer<br>
+                Based in Tokyo, Japan.
+            </div>
+
+            <div class="info-block">
+                <a class="info-link" id="link-instagram" href="https://www.instagram.com/nitttan/?hl=ja" target="_blank" rel="noopener">instagram</a>
+                <a class="info-link" id="link-mail" href="#">email</a>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- v2.15: selectを38枚に変更 ---
+        /* =========================================================
+           写真カテゴリの設定
+           key   … 画像ファイル名の頭につく文字(photo/select_001.jpg なら "select")
+           label … 画面に表示する名前。ファイル名を変えずに表示だけ変えられる
+           count … その カテゴリの写真の枚数
+           ========================================================= */
         const PROJECTS = {
-            "select": 38,
-            "wien": 94,
-            "thailand": 85,
-            "amami": 22
+            "select":   { label: "selects",  count: 38 },
+            "wien":     { label: "wien",     count: 94 },
+            "thailand": { label: "thailand", count: 85 },
+            "amami":    { label: "amami",    count: 22 }
         };
+
+        /* ===== [要編集] メールアドレス =====
+           迷惑メール収集ボットに拾われにくいよう、@ の前後を分けて書いています。
+           下の2行を自分のアドレスに書き換えてください。
+           例) sample@gmail.com なら user="sample" / domain="gmail.com"        */
+        const MAIL = { user: "your-address", domain: "example.com" };
+
         const PHOTO_DIR = "photo/";
         const FILE_EXT = ".jpg";
 
-        let currentCategory = "select"; 
+        let currentCategory = "select";
         let currentIndex = 0;
         let photos = [];
+        let currentMode = "photo";   // "photo" | "index" | "info"
 
         const body = document.body;
         const mainPhoto = document.getElementById('main-photo');
@@ -200,16 +337,23 @@
         const currentProjectLabel = document.getElementById('current-project');
         const thumbList = document.getElementById('thumb-list');
         const indexPage = document.getElementById('index-page');
+        const infoPage = document.getElementById('info-page');
         const projectListUI = document.getElementById('project-list');
 
         function init() {
+            setupMailLink();
             renderProjectMenu();
             loadProject(currentCategory, true);
             window.addEventListener('keydown', handleKeyDown);
         }
 
+        function setupMailLink() {
+            const a = document.getElementById('link-mail');
+            if (a) a.href = 'mailto:' + MAIL.user + '@' + MAIL.domain;
+        }
+
         function handleKeyDown(e) {
-            if (body.classList.contains('mode-index')) return;
+            if (currentMode !== "photo") return;
             if (e.key === "ArrowRight") {
                 changePhoto(1);
             } else if (e.key === "ArrowLeft") {
@@ -219,23 +363,36 @@
 
         function renderProjectMenu() {
             projectListUI.innerHTML = '';
+
             Object.keys(PROJECTS).forEach(key => {
                 const div = document.createElement('div');
                 div.className = 'nav-item';
-                if(key === currentCategory) div.classList.add('underline');
-                div.innerText = key;
+                if (key === currentCategory && currentMode !== "info") div.classList.add('underline');
+                div.innerText = PROJECTS[key].label;
                 div.onclick = (e) => {
                     e.stopPropagation();
                     loadProject(key, false);
+                    setMode('index');
                 };
                 projectListUI.appendChild(div);
             });
+
+            // 1行空けて info
+            const infoItem = document.createElement('div');
+            infoItem.className = 'nav-item nav-info';
+            infoItem.innerText = 'info';
+            if (currentMode === "info") infoItem.classList.add('underline');
+            infoItem.onclick = (e) => {
+                e.stopPropagation();
+                setMode('info');
+            };
+            projectListUI.appendChild(infoItem);
         }
 
         function loadProject(category, isRandomStart) {
             currentCategory = category;
             photos = [];
-            const count = PROJECTS[category];
+            const count = PROJECTS[category].count;
 
             for (let i = 1; i <= count; i++) {
                 const fileName = `${category}_${i.toString().padStart(3, '0')}${FILE_EXT}`;
@@ -250,7 +407,7 @@
             } else {
                 currentIndex = 0;
             }
-            
+
             updatePhotoUI();
         }
 
@@ -277,8 +434,8 @@
             mainPhoto.onload = applyOrientationClass;
             mainPhoto.src = photos[currentIndex];
             if (mainPhoto.complete) applyOrientationClass();
-            currentProjectLabel.innerText = currentCategory.toLowerCase();
-            
+            currentProjectLabel.innerText = PROJECTS[currentCategory].label;
+
             const currentNum = (currentIndex + 1).toString().padStart(2, '0');
             const totalNum = photos.length.toString().padStart(2, '0');
             photoCounter.innerText = `${currentNum}/${totalNum}`;
@@ -294,26 +451,35 @@
         function resetScroll() {
             window.scrollTo(0, 0);
             indexPage.scrollTop = 0;
+            infoPage.scrollTop = 0;
         }
 
-        function toggleMode() {
-            if (body.classList.contains('mode-index')) {
-                body.classList.remove('mode-index');
-                resetScroll();
-            } else {
-                body.classList.add('mode-index');
+        function setMode(mode) {
+            currentMode = mode;
+            body.classList.remove('mode-index', 'mode-info');
+            if (mode === 'index') body.classList.add('mode-index');
+            if (mode === 'info')  body.classList.add('mode-info');
+
+            renderProjectMenu();
+
+            if (mode === 'index') {
                 setTimeout(() => {
                     const target = document.getElementById('thumb-' + currentIndex);
                     if (target) target.scrollIntoView({ behavior: 'auto', block: 'center' });
                 }, 10);
+            } else {
+                resetScroll();
             }
+        }
+
+        function handleIndexClick() {
+            setMode(currentMode === 'index' ? 'photo' : 'index');
         }
 
         function selectPhoto(index) {
             currentIndex = index;
             updatePhotoUI();
-            body.classList.remove('mode-index');
-            resetScroll();
+            setMode('photo');
         }
 
         init();
