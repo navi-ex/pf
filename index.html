@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <!-- ===== [要編集] サイトの名乗り ===== -->
-    <!-- v2.18 = v2.17 + ファビコンのダークモード自動反転 / info のロゴを info.svg に変更 -->
+    <!-- v2.23 = v2.22 + 左ナビの表記を頭大文字に統一 -->
     <title>NP</title>
     <meta name="description" content="東京を拠点に活動するアートディレクター / グラフィックデザイナーによる写真作品集。">
 
@@ -104,7 +104,10 @@
             text-align: left;
         }
 
-        .nav-item { cursor: pointer; display: block; text-transform: lowercase; }
+        /* v2.23: ナビの表記を頭大文字に統一(info の Instagram / Email と揃えるため)。
+           capitalize は単語の頭文字だけを大文字にする指定なので、
+           PROJECTS の label は小文字のまま書いておいてよい。 */
+        .nav-item { cursor: pointer; display: block; text-transform: capitalize; }
         .underline { text-decoration: underline; text-underline-offset: 3px; }
 
         /* info を1行空けて配置 */
@@ -112,8 +115,16 @@
 
         #index-toggle { cursor: pointer; }
         #project-list { display: none; }
-        #current-project-info { display: block; }
         #photo-counter { font-variant-numeric: tabular-nums; }
+
+        /* v2.19: 写真ページでは index とカテゴリ名のあいだを1行空ける */
+        #current-project-info {
+            display: block;
+            margin-top: var(--nav-info-space);
+            /* 中身をJSが入れるまでのあいだも高さを確保しておき、
+               表示された瞬間に文字が動かないようにする(2行分) */
+            min-height: calc(var(--ui-font-size) * var(--ui-line-height) * 2);
+        }
 
         @media (max-width: 768px) {
             #nav-ui {
@@ -259,18 +270,25 @@
         body.mode-index #current-project-info,
         body.mode-info  #current-project-info { display: none; }
 
-        /* index 表示中は index ラベル自体は押せない(info 表示中は押せる) */
-        body.mode-index #index-toggle { pointer-events: none; cursor: default; }
+        /* v2.19: index / info を開いているあいだは「index」の文字を消す。
+           index を開いている最中は押しても意味がなく、
+           info からはカテゴリ名を押せばサムネイルへ移れるため。
+           元の写真に戻るときは Escape キー。 */
+        body.mode-index #index-toggle,
+        body.mode-info  #index-toggle { display: none; }
     </style>
 </head>
 <body>
 
     <div id="nav-ui">
-        <div id="index-toggle" class="nav-item underline" onclick="handleIndexClick()">index</div>
+        <div id="index-toggle" class="nav-item" onclick="handleIndexClick()">index</div>
         <div id="project-list"></div>
+        <!-- v2.19(D-4): カテゴリ名と枚数は空にしておき、JavaScript が正しい値を入れる。
+             ここに仮の値(以前は「01/00」)を書いておくと、回線が遅いときに
+             その仮の値が一瞬だけ画面に出てしまうため。 -->
         <div id="current-project-info">
-            <span id="current-project" class="underline" style="text-transform: lowercase;">selects</span><br>
-            <span id="photo-counter">01/00</span>
+            <span id="current-project" style="text-transform: capitalize;"></span><br>
+            <span id="photo-counter"></span>
         </div>
     </div>
 
@@ -297,8 +315,8 @@
             </div>
 
             <div class="info-block">
-                <a class="info-link" id="link-instagram" href="https://www.instagram.com/nitttan/?hl=ja" target="_blank" rel="noopener">instagram</a>
-                <a class="info-link" id="link-mail" href="#">email</a>
+                <a class="info-link" id="link-instagram" href="https://www.instagram.com/nitttan/?hl=ja" target="_blank" rel="noopener">Instagram</a>
+                <a class="info-link" id="link-mail" href="#">Email</a>
             </div>
         </div>
     </div>
@@ -353,6 +371,16 @@
         }
 
         function handleKeyDown(e) {
+            // v2.20: Escape キーで写真ページ ⇔ サムネイルページを行き来する。
+            //   写真ページ    → サムネイルページ
+            //   サムネイルページ → 写真ページ
+            //   info ページ   → 写真ページ(info は行き来の対象に含めず、抜けるだけ)
+            if (e.key === "Escape") {
+                setMode(currentMode === 'photo' ? 'index' : 'photo');
+                return;
+            }
+
+            // 左右キーでの写真送りは、写真ページを見ているときだけ効かせる
             if (currentMode !== "photo") return;
             if (e.key === "ArrowRight") {
                 changePhoto(1);
